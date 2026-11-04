@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Consulta tu usuario de Milton Ochoa | Gimnasio Cristiano Faro de Luz</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS para procesar Excel en el Panel Administrativo -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        faro: {
+                            navy: '#0B2240',
+                            blue: '#163A66',
+                            gold: '#F59E0B',
+                            lightgold: '#FEF3C7',
+                            accent: '#0284C7'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: radial-gradient(circle at top, #163A66 0%, #0B2240 60%, #061326 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+        .lighthouse-glow {
+            box-shadow: 0 0 35px rgba(245, 158, 11, 0.45);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex flex-col justify-between min-h-screen p-4 sm:p-6 md:p-10 select-none">
+
+    <!-- BARRA SUPERIOR / ENCABEZADO -->
+    <header class="w-full max-w-lg mx-auto pt-2 pb-4 text-center">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-amber-300 text-xs font-semibold tracking-wide uppercase mb-3">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            Plataforma Académica 2026
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="w-full max-w-lg mx-auto my-auto">
+        <div class="glass-card rounded-3xl overflow-hidden border-t-4 border-amber-400">
+            
+            <!-- SECCIÓN DE IDENTIDAD INSTITUCIONAL -->
+            <div class="bg-gradient-to-b from-slate-50 to-white px-6 pt-8 pb-5 text-center border-b border-slate-100">
+                <!-- Espacio para el Logo Institucional -->
+                <div class="relative mx-auto w-24 h-24 rounded-2xl bg-gradient-to-br from-faro-navy to-faro-blue p-1 lighthouse-glow flex items-center justify-center mb-4 group overflow-hidden">
+                    <!-- Si colocas logo.png en la misma carpeta, se carga automáticamente -->
+                    <img id="inst-logo" src="logo.png" alt="Logo Gimnasio Cristiano Faro de Luz" class="w-full h-full object-contain rounded-xl hidden" onload="this.classList.remove('hidden'); document.getElementById('fallback-logo').classList.add('hidden');" onerror="this.classList.add('hidden');">
+                    
+                    <!-- Emblema SVG Institucional por defecto (Faro de Luz) -->
+                    <div id="fallback-logo" class="flex flex-col items-center justify-center text-amber-400">
+                        <svg class="w-14 h-14" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 18L22 23M56 18L42 23M6 28L22 27M58 28L42 27" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M25 20C25 16.5 28 14 32 14C36 14 39 16.5 39 20H25Z" fill="#F59E0B"/>
+                            <rect x="26" y="20" width="12" height="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+                            <path d="M23 28H41" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M26 28L23 52H41L38 28H26Z" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+                            <path d="M25.2 35H38.8L39.4 40H24.6L25.2 35Z" fill="#163A66"/>
+                            <path d="M24 45H40L40.6 50H23.4L24 45Z" fill="#F59E0B"/>
+                            <path d="M18 52H46" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <h2 class="text-xs font-bold tracking-widest uppercase text-faro-blue/80 mb-1">
+                    Gimnasio Cristiano Faro de Luz
+                </h2>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-faro-navy leading-tight">
+                    Consulta tu usuario de Milton Ochoa
+                </h1>
+                <p class="text-slate-500 text-sm mt-2 max-w-sm mx-auto">
+                    Ingresa el documento de identidad del estudiante para recuperar sus credenciales de acceso.
+                </p>
+            </div>
+
+            <!-- FORMULARIO DE CONSULTA -->
+            <div class="p-6 sm:p-8">
+                <form id="search-form" onsubmit="handleSearch(event)" class="space-y-4">
+                    <div>
+                        <label for="doc-input" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                            Número de Tarjeta de Identidad / Documento
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                <i data-lucide="id-card" class="w-5 h-5"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                id="doc-input" 
+                                inputmode="numeric"
+                                autocomplete="off"
+                                placeholder="Ej: 1068445080" 
+                                required
+                                class="w-full pl-12 pr-10 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-lg font-semibold text-faro-navy placeholder-slate-400 focus:outline-none focus:border-faro-blue focus:bg-white focus:ring-4 focus:ring-faro-blue/10 transition-all"
+                            >
+                            <button 
+                                type="button" 
+                                id="clear-btn"
+                                onclick="clearSearch()" 
+                                class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                                title="Limpiar campo"
+                            >
+                                <i data-lucide="x-circle" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                            Digita el número sin puntos, comas ni espacios.
+                        </p>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        id="submit-btn"
+                        class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-faro-navy to-faro-blue hover:from-faro-blue hover:to-faro-navy text-white font-bold text-base shadow-lg shadow-faro-navy/25 hover:shadow-xl hover:shadow-faro-navy/35 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+                    >
+                        <i data-lucide="search" class="w-5 h-5 text-amber-400"></i>
+                        <span>Consultar Usuario</span>
+                    </button>
+                </form>
+
+                <!-- CONTENEDOR DE RESULTADOS DINÁMICOS -->
+                <div id="result-container" class="mt-6 hidden"></div>
+            </div>
+
+            <!-- PIE DE TARJETA -->
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span class="flex items-center gap-1.5">
+                    <span id="db-mode-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span id="db-mode-label">Bóveda Segura Activa</span>
+                </span>
+                <a href="https://miltonochoa.com.co/" target="_blank" rel="noopener noreferrer" class="font-semibold text-faro-blue hover:underline flex items-center gap-1">
+                    Ir a Milton Ochoa
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- PIE DE PÁGINA E INGRESO A CONSOLA DE SECRETARÍA -->
+    <footer class="w-full max-w-lg mx-auto pt-6 pb-2 text-center text-white/60 text-xs">
+        <p>© 2026 Gimnasio Cristiano Faro de Luz · Todos los derechos reservados.</p>
+        <button 
+            onclick="toggleAdminModal()" 
+            class="mt-2 inline-flex items-center gap-1 text-[11px] text-white/40 hover:text-amber-300 transition-colors"
+        >
+            <i data-lucide="lock" class="w-3 h-3"></i>
+            Administración / Actualizar Base de Datos
+        </button>
+    </footer>
+
+    <!-- MODAL DE ADMINISTRACIÓN (PARA ACTUALIZAR EXCEL O CONECTAR SERVIDOR) -->
+    <div id="admin-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                        <i data-lucide="database" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-faro-navy">Consola de Secretaría Académica</h3>
+                        <p class="text-xs text-slate-500">Gestión de Base de Datos y Seguridad</p>
+                    </div>
+                </div>
+                <button onclick="toggleAdminModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="space-y-5 text-sm">
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <h4 class="font-bold text-faro-navy flex items-center gap-2 mb-1">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i>
+                        1. Actualizar desde archivo Excel (.xlsx / .csv)
+                    </h4>
+                    <p class="text-xs text-slate-600 mb-3">
+                        Si se matriculan nuevos estudiantes, selecciona el nuevo reporte de Milton Ochoa aquí. El sistema cifrará cada registro con <strong>SHA-256 + XOR</strong> automáticamente para que nadie pueda descargar ni ver el listado.
+                    </p>
+                    <input 
+                        type="file" 
+                        id="excel-upload" 
+                        accept=".xlsx,.xls,.csv"
+                        onchange="processExcelFile(event)"
+                        class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-faro-navy file:text-white hover:file:bg-faro-blue cursor-pointer"
+                    >
+                    <div id="upload-status" class="mt-3 hidden"></div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <h4 class="font-bold text-faro-navy flex items-center gap-2 mb-1">
+                        <i data-lucide="cloud" class="w-4 h-4 text-sky-600"></i>
+                        2. Modo Servidor Remoto (Opcional - Firebase / Google Script)
+                    </h4>
+                    <p class="text-xs text-slate-600 mb-3">
+                        Actualmente el archivo ya cuenta con los <strong>236 estudiantes</strong> protegidos en su bóveda criptográfica interna. Si prefieres consultar un servidor externo en tiempo real, pega aquí la URL de tu base de datos Firebase Realtime Database:
+                    </p>
+                    <div class="flex gap-2">
+                        <input 
+                            type="url" 
+                            id="remote-endpoint-input" 
+                            placeholder="https://tu-proyecto.firebaseio.com/estudiantes" 
+                            class="flex-1 px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-faro-blue"
+                        >
+                        <button 
+                            type="button"
+                            onclick="saveRemoteEndpoint()"
+                            class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-lg transition-colors"
+                        >
+                            Guardar URL
+                        </button>
+                    </div>
+                </div>
+
+                <div id="download-updated-box" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+                    <h4 class="font-bold text-emerald-900 flex items-center gap-2 mb-1">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                        ¡Nueva bóveda criptográfica generada!
+                    </h4>
+                    <p class="text-xs text-emerald-700 mb-3" id="new-vault-stats"></p>
+                    <button 
+                        type="button"
+                        onclick="downloadUpdatedHTML()"
+                        class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow flex items-center justify-center gap-2"
+                    >
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        Descargar nuevo archivo index.html actualizado
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LÓGICA DE LA APLICACIÓN Y BÓVEDA CRIPTOGRÁFICA -->
+    <script>
+        const SALT = "GCFL_MILTON_2026";
+        let REMOTE_API_URL = localStorage.getItem('gcfl_remote_api_url') || "";
+        
+        // Bóveda Criptográfica SHA-256 + XOR con los 236 estudiantes de usuarios.xlsx
+        let ENCRYPTED_VAULT = {"462f7c5c6f45d5a2":"OR8RDRQDQXktdjF3ciRDYiItd380JClCcnF5KCwkRhUQFkRfRwQHVQMEVFYAUQAUGhVRFA0QZkRUDUsLUVj3iwxEG1P0iUoaHm8=","7f0006867712360e":"OUMRXENbEHd4YWJ1YHxBZX51MzB4QzcsK3lwKRcfE0ERWRAJAgQJDAICCQkKGxUaAxYIQGNHAg1BCgUI8tFeFkoI8YJIQ09o","818cbeeb3504b6b8":"bEhAWxUMFXV7fWc3IzQnMBZ1eXtpI3gjOBEhcHs2cXN5eBdIQBcQXhRUCVEGAwZRBgQBFB9DUUEJEGFLVV0WClRaoYZZFh8G9oMaRxs7","02bd5069995897b6":"bEsVWRMMRHx9EmVwYXJxZxZ3e3BqQXd3fX03fXZ9Qz14eCh0Fh4VQkcCQwRVCAhTB1IGBQQQSBVeFw8UbEsDC0RZVF7yhQgYEALxgRoXTWk=","f0d237c29ec59c90":"OBoSDBILRiV1ZHpzZhIhcH0TIiBqNn4tf3dEdC5/IBIvZyB4JBIcGkdGWEQCAlUDVFMGUAZWEhkQUBsMEm1AVA0SWQFZ8tcMFB4J9IUbR0hs","4319ecb56279b3a2":"a0kQDxQMFXB7dzgkeHZtEiMscWgkFXGisHtyZyhgGXI3JUEcRkVHDBNQAlEFUVUHCAcPRB8RUEADQTVHVVgXX1Nb8dJYFh8H9olLR0lu","18683da62089c2c5":"Pk5DXBEPFyx2LyUhPhUyJClycXN7EWUkLGUgekMVFEERXhcABgQIBAFVBgEPEx9BA0cPQzJCAgpKWlVc8YpXE00Fo4IaF0g8","606f2731de655440":"aE8WCkZZFn4zfmpweUEoc2EwKCx0O0N7IGZ7cBdgImxETUdBGw4bBggDUQRUUgBSWkRIR1QSWBtmQgcKSlBRX/CHWkRMU/aBSBNNbg==","30f58d652e13b401":"bEpAD0YLF2MkfS1hcD4VJSAmNnkoJ2NGd3BwZ398KnkbHBBNEAISV1RSBg0DCAQDDRoVG1AQCBs2RQIKRl1bX/SCDEFMAfeBTBIZbg==","74b9acbdf16ca393":"aUIWDBVeGmIkLiprIG8SI3kvdWJEJzAveXYiEBxHERMLGgdSAlMFBAIFUgdDGkMCEwtHMRNQV0QIVQ/z1lcQTAL7hEsVGWU=","82cdc0f485b4a6d7":"aExHVhQLRmB2e3Ase3lwEnZ0RHxzEnlhNnYVKG15fhMgIXsrYiARHRcXRwxHVQgFUlcCAwkCARVNEVMRC0ZgSlJZFlFVWKeFWRcdUvqAGBBPbA==","18a6f50e561df6da":"YkkXV0cMEHQuJTp2RTAif31qE212IEU4djR3MipAT0ZBFltGVQJSBQYJAFQIU0YfGl4TX0R2QlFVCRZQoYhEH2Q=","acbb364efb9befa8":"aRlEXhsOQ3JgfW54EnVsemxmeH57Q3xhI3wYfChwYyYoRh1HTUADQQkEUlNUUQFVU1RDFRACEAgQIkNXBV4VVPDSRE1k","afbb7d6f52a720cc":"bxkWWhpcQHAndXw7IhIpcTF6d34iJGMSLCVqLCN5chBOFBZBXhZUA1JSVAJUV1UBRB0VVUNbQXIXAlVWF1Px1hYfaQ==","8c33758c51774b33":"aUsaXBADR3R4fnd2cX9CYnExLHJsZUEpcmIoJxZxL3sycBoVFxMXCRFUUQkEV1RVUAdREkgQV0ADE3YQVQYMGQPyiBBPZA==","726746fffa4a1587":"bBoSXRAMQyByMmdqdxYhdCp9fkV0YGoWeCRjO0AbQ0FDAhRVBgQJVwAHBQBRQx0WAUFfRHJFWAIJFgf2iRJIbw==","5f111fa7fd094293":"aU4VXBJcEiEkZ3xwdRg1d2RydGQYcWEnInpBISI1LH1BTRZNRF9GBwkDBQQHVwAGBkYeR1QUCUYhE1FUCRZXpIIXSm8=","fe047ff22fa0dd71":"axlHChoJEHUhFTJ0aiZ0N0Imf3ZiQSk0cipBfyF4c3J4fRsaFRNBC0MFAwMFVwYCAFNUGxwbXhtfQX9LU1ZbQwGg1UZFbg==","1595c937c3ab1441":"b0IVDURbEnUzJC9mfWdBdXIpc2chKhR8KXRwQ2Quc3ElEU8XQhYMQARWUQcDVFUHCVlEGhQFElsbcBQEB1hECPaJFR47","acc746db033b7b33":"bE1GWRADQX4kYnF4d0Ineit1chIof3g2dDVAGRMQQA0RAABTAAUFAlMDXUcfEF4XXhciEAVTWEFS9IUbGTg=","4ea1724564b7502a":"PUtGCBcKFSFxNiEtJxl0dih9anh1bnBEcCB1KBpJFBRBCRsICQkCAgEHBwABFx0UARcPEnERV1BaGQX0ghtIbQ==","4b982f76058410eb":"OEsVDUMCQ3J5LGhwdCFqGTMif3k0IT4QP3N9L2BGcH4jLHR5fGp4RkhDEUMLRAMAAQENVlRTVwhGHRcCEggRcBFRUwxBCaOFFB9v","3df3c7b0eee5e8f9":"Yh9HXUYMRH57encvcGIRIDZhbH1rFmslemB8fxoYGkwVAhpVAFFUBwEBBVRREhRDXkcCESFBAFxbFQf0gBBPOQ==","ee5f37c406ea912e":"ah4VCkdfE3V0cWJzdEJtamIvLyoqdhkveGVnp+oXHxQTFg0VBgcGBlFRAQcFV0MbEl8XWxR0EVlWXhYD9IJGT2w=","366300f79ff41d3a":"YxpEXRdcFS0xNSoqcUZmci8lLXFtGH43d3wYc3V6LTRyEBVGFkcMGgkIAAAAB1MIUlYQGhRQGg0VIUFYUl0YVPrRRE5o","b02da0ba21e07290":"a0sRChMCRmd3cH0kJXoYeDcuMHt5FS4jYH9zYhpJE0UWX0YDVlUCAlNTBVICEk5EARVZEnARAFJXQwOj0kNIPA==","07e9e61f8b5d34ac":"PkkaVkZeEGd8ZHx5YSIWJ353c2V+fBUoYHNydip4d0cfE0QUXBMFBwYEAFMEAVUEEhsVXxMIFHcUWAFfEVLw0UdPZQ==","c30598d0b7618916":"bksXDRACETUjZTB/EGcrdSkkFW5wdTF9YSxzFBhDF0MCEAYEAlICU1MCBwUTGBNfQAIbcERRV1sYCaTSEk5s","2372b2c576304606":"OhoQXBVbQWUoIikTangsc2d8FnAkKywhdUJ2K2FwZzZ1FkoQExVbEQZTVFQDVlUDBA0QTRQCGwNDJRRRB1xEBaPREE8bGkFbQ1tEY3F0LhZnfHtxNypFIHgseiB/GXMtYn03ZyMVTRFCQV5GB1ZUAgAFAFAEVRsVQwVECkF0FlUFDhIA9dFBSDw=","0818f99e21ce3fb5":"bUwVVhpYQ2YrdSx3F3R2bDV5fhl6fnR0cWN6Y0ZPFhARXkBUVQIDVgEBUFVYExlGAxsLE3FKUF1dEwinhBEfOw==","4bf35fd413e844cc":"bkJHWkMOEmlsd350QXkub3VmJ25Da3d9ZXR7EiIgYXglG05GTBoNFFBWAlYDCFUCBAUUGRMFF1gVJEUAB18YVfeJR0k8","d8f4513d46989837":"bBkVWURbQGY3LHhnd2orRTAsY2RyZUN6JyJ/ehRJQUwTChRTA1UJBwdTCFEBQUlAA0NbFSRHV1FYF1T7gxsYaQ==","432786d4bf5117b9":"ORgSV0ELEmR3J2Evf2UkaER7c2ckcCsjEXd/LXNnFU0WFBoCFgEBVAEHAQMEUQoQFEZUFQ1AJEIEUw4QCaPWQx8+","83644215d06fd1f4":"OhpHDxNYR24kenNtFHNqJGV7EnlqJXF1KHt5EkhHQBZbEABSAFQGBwcDAFcTTkQGEg5HchRVV1cSAffSFEpp","91deb518cc96f17d":"aBlEDBANRzB9eCkqf313FHEgYnMtJRBycCZ/EBwUQxMMEgZSUQBTBQNTAlYWGRNVGg5AcEYCBgsZU/OBGx9l","9852b56fe6083ef2":"ahpGXxoIQCUreBg1cy11cGp7eRFxcHl8d30bShRBRAhABwVWAwYJAwcLDEMYQVQRWUF0FAUADUZT+oYTGz4=","d2edc52861922a37":"OR5AWBUNEHkpY3ksLEVhJ38icHE4Q316c3oxcHkQGEMXGw8WAVQEUgVRAQIBBxYaRF5AXxQhEFcBCkMC8oYbHj8=","f2d38323d705b299":"Yk4RDUMDQ3Z1cC4/cRV6JGt8JXYmd28ScS1yeyFhFHwkYCx2FUhDQEEPQQJVAFEHVVQGAQBGFBEDFg8WcRNUUVYVAaHRGxxp","657bcddf7699ed85":"OUhGXhJfFXVgLzJrInR8EHZ+Iz4YYSN+bCR7QXQgM311Q0pGFhING1RUVQUNBlYIBAESGBpXGwMWcUtUU1dFBaCDRk1t","f255549479992712":"OUJDXhtYQydgMHUVNHR1eCNydhUjfS87cXokZ3wXG0BDQ15EBlEABABUUQEDBRocRgNDWxF3SwNRWxUAoYcWGz8=","ab7d2c879588be98":"akhHX0FYFXQpKCZiFXQga3sqJxdzcjR5F2p9c3AlRh0REBBcEgQDVQUFBwIHAlYXGhZWFgNAIkIFVQtDVKeFRkxu","f6dbfad43930737f":"aB8WD0AKRnQtLT5yenRjFCZ4eW0iKCE5Eil2Yi0gECJ9anogKCZ4FEkQQEYJFgMCAlMEB1YIUwcXHRQGQFkackEFUA5CAqaDQB45","d65385acffb6b25e":"ax9GVhVYF39tN34mZWJxaRgrczZ2dipxIDlBeWcgJyF1eiBDGkRFRwpGBFIJUg0IBgQJUhZNRFFHDhIhR1UFVhBWpogVH2g=","ba0edb8d1996685c":"bEtGC0QKE3IiP3wVdnF8cGohdxMoZCMnJ0F1dzIrIREVGxMQDBsJAAUFVwkKCFMAQ0oRUxYCQXcUUwJYGFOg1BVNOQ==","0af99be99f432c1f":"aEhAWkNZR34nNjEsLXNpFHFxfTV5KxBzN3IvRHktN3ZASEAUEQpEBgYBCQ1WVFIED0cbQFASAhF+RFNdDBcLpIMRH2k=","085a54eca80e3eae":"YkhHWBRbGyh3f350RHAxMC0nMncSeSQ2LCAqIhNOERNGCxNVBQUBAwFRAAkOFB5AARVfE3QXUlBaFlSn0UNKbw==","f8ffc236a3f6b9df":"YkoSDBEDFygkfHx8bUQ1cH9/dCJ3FHckfnwnKRYeEhQWXEZVUVEGAQUKVFMDFBgVXxYLGyZKUF0LGFD2hBRIbg==","3868cd5d3b8515aa":"bUtDXhJeGywhJCshRGZ1YSZ/ancQdCd7LXdxLxN5NyEreXwkRxoSRkMOFFUIAlQFCApXBVcVHBYFEl9EdEICAVkQU/KARkQ+","4bfe2e3512618324":"YxkXXEYLG2NyantxYn8Qc31iJnwqFGolYSV4EkgTQRQCE1BVUghQU1EAUApGGRFXRgIQcxRXU1hEBPKBGkw/","1890c0ac2e8cb5bf":"OkpBDUMLGmgqfXd0cxV7cWdkLHx9P0F5ZX0vcjV3ExRGQhAJRFAFVlVTVAIABFEbGEZfFQlDcUZZBlxEBqSFERxs","9d482aa1ff62b76e":"YkgXCBRbGmhnYCoRISMsJGtwdnkUdyx7dnkjYxJNF0IUD0FSBQAJDFVQBgZQFE4RBEADRnBHB1dcFFT0gRIbbw==","7b5b7f809028e487":"bR1HVxYMF2MzLyxiJ2ctGTV6ZjMkYkF3eHB8ZSZ4Gk4aQxRfFlMIUgRXUwtQVQYSHhRQFFsVdENUVldEUPXWRks7","4cc43f91c792ecfc":"PRhBWEECEGV5ImMmdjckRCdsI30wfTBGKn8gdRJmK3NncHd2Fk4STEcPFAYDUwNWCQdSBA8VFEFXFltBJUtUUwlDUfTTGk9r","8b3ae287f7404173":"b0tHVxVcRGJ2e3YmInVBcnt3eHExEiQkemR4Ji95FR5AQkMJRlRTVlYBA1QDBgZGHxsCEFkVdUUHVwsZBKCEEklt","a1f50e7d18c1c0e5":"bE9DDRoDE2MsNyd0LkVxcCYxIC5yaxghcHl6cXR1Qid1En1wZjM1FxpHRRNYFQMBUwQCUVdTCQ8XGhpQEAoXcUVVBQwYC/OHRxg7","cb3e96386276cf7f":"bRoaWhAMF2B/eidGdHgsayV/fGMZMyAvcDF+dRtPGkMQChcBCQcCAwkBAglfFhtGVxMCG3VCBQJXFwaj1hFNaQ==","c7bb72004d685f1d":"Y05HWhdYQTV1fXFpRS00fnd1LUJnJX9keSJwexMUFkYUAkBUU1YABVFTVANSFxsTXhJbE3BAVFVYGAKnghVFaw==","194ce2e1ec80bfa9":"OR1HVkRcE3kzI3h1dkR0Jy52dzZ0RilheXElL3cWSRZAEggQBAdRAwUGUQAJU0MaEQYbDkRwFgBUDBJVpoNBTz8=","bff435c2779eb1fc":"OEhECBAPEnFiMCEgcyUVYiR3fyd0fBR9dmR5cxdwJHQhKhROREMTChsDVlJWAgcLBAgHR0pDAUQPRnVBVl1aFFDx1kRPaA==","33269e1f59f34311":"OR9AVxsCRyRldHgZIH1/eXt6LkQ2e2QuLyAWSBRNGw9EVFVTVAYAAQIFAUQbE1ZAChcjQldXChEHo9MbH2g=","8883f45659ba01f2":"bUMbCxEOQXP7v3JiFWr0uH52eXZsQ3V0ZCcpFk5GEEcPFFUDBgUDAQoBUlURShtQGgoWJBRZVAsWAaDWFU8+","ec447c0f3253c582":"OkkXXkEJFCYjYyItdUV7ImV+GDNwIDV5Ni8gEU0REUQOG1NUCQQDBwUEAwJBHRpfQwIbfkIEBgtDBvWGQB88","c317738f74e56c66":"PUIVVkQOG39zNHJ/dRJ8dXctanUuNCUSLip4FE8WR0YCRwRUVAZTUQcHB1NHHBVeQFhBfxNWUFwXC6bSFRhu","57006416637c3e4a":"Yh0TWkAJFHF7fnFtFXRyZTJxdHkqQTF+d313EkkXQRIPGgkHCVINAFICVAMSSBAGEQhEdRZWAFpGVqSHEEhs","abfa0f10c1e3c551":"OUgbWxZbQHV1dWx/I0MhJ0UseGErZxg0eGR1cXlxFUhHFxAJFgkEBQUAAwUFVgBAHBoCEg4Rc0oEXFkQCvDVGx9u","3fe497a017e7800d":"Y05DXhsLFHR2Y2Qsd3FpGWR9ZXczGDJyNnRBYSt/eSNDGUMUR15EVQVTVQMBBFICABQbF14RXxMjQ1FRWhAEoIgXHG0=","27470b219710ad58":"Pk1BCEcJFngsKjJ3MHoWMXYqfEUldS5+eyIbThZCEwISAlNWAAEFBwYDVhtNEFYVAxByRgQGWkMA8IUXRT4=","123af334fd54b3ee":"PhgRVxpfRjF/c3h7F3snNmR7fBFjIntiKCJydhsbE0xGWBYFAwdRAAEKCQZQRhgTUBQCESVGBVINFFD21BVIOA==","844191297e30cbea":"YkkVChUIRjV5KnZxJBMrd2Vnfi99OBFmcTMtfnt4ERRGFxMLFAVRUQkDAwoCCQcWGRoCG15HJBFRUAxFV6DSEkRv","e16a774815331aee":"Ph5HChFfR2UrfCpEdmNwdXlFd2QwdnB5d3okRhQVR0MLFQQDUQlWCVVUBwJBSUQGFQgUJhRZAV9EC/bSGko+","457710bd07d36b44":"Y0sRWhNcQWR5L3xiGC9/aSdrGSswNyJ2ehUUQEMWXBBVBlEEAFRVUldRExpABUcNQyNGVVUNRAKnhRBIPA==","8eb528d0b1ec6ec1":"aE0TVxpbQWJwN3siFikpLWF2ZnlFf2B4JSJFc3QzfSBAGRtNEV8WCQcDB1ZSUFQJBxQZFVcaDEQiE1VdWUMKpoMUTGQ=","3b5d6973f2fe3011":"PhpED0MIRzcpYGMiIHoRNHdrZDAgOUQpYnd2QycodTBwMBAeRkIVAkQAUQMFDQhSAFQOQU0bA0EMG3RAUVNZFVaj1kMcbw==","804ffff496d23b0b":"aE0QCxcKEiBhcHIyRXJ1Zn4WfXBneix6eS4aShBHGl8XCAFWVVFUUlQFABMdQwYTX0F0EFlXXREB9YhBHGk=","6da9dff5965f9378":"YkoRWBQPRidqLWwkQ211f3BkRmB4Jn96RXJ1YCJmE00RExReRAhSBlMACQJSAwBDGkcFGlhHf0JXAAlEBvuEFERs","55d317cfd023c5db":"ax0VV0cPFiEqNHd8YX0XZXErd3ojPxh+cjR4IxRzLXR9fXh6eRodQxAWAhRXAFZTAAFRBVZVE05EAkYLQyZKA1QJFw2nhRYfOA==","13a310110fe073fd":"bEJEV0BYEnJ5MXdxa3oRZHN+ensmbxAsd2UrI0JyfmQjExwVRxteEQJVAAYFBQwEBgJDHhVTFgxEcUYDAg4ZB/WJREQ/","beea028142bf8043":"Y0pEXxcMG3xwRnknNyBmRWV9aiZzcXwpdHMZYH5xZH42cHFHFEBGRl4WAlYIUVQIVlBUABBIRlVEDERwEVQAVhgFpIEXS2Q=","4786f6a422b4caa1":"b0gaWEFcFCV8eRJsfjB/RTF5JjxFIngqf3x7IEBPRkcaWRQEAFIAAVIMVVEOR0pGBBsMQ35FBVNbFVbzg0dJbw==","7d82372f9990d5f7":"PkpDXBdeE3F9cHthKXpENydmdnFkQzd8c3wlEnV6dH12EBlERhECGwgAUQYNVgIFAwNGGRAGQA0QcBNYVFdBAaeBQ09o","fbc2ff5e1c80759b":"bkgXDRMJRnxnZSMvf3wQcCx8fGtpMHdpGWEnezBzfBJNFBEaCxEHVFMJBAECBlZbFxkVVUEPGyFHBVILEQf7hBdOaA==","1a057b7d36fab751":"aElHXURYFXZ+fTFwYxN4NnN3eHZ3bEUhfypwNRdwMWZlYn0SSRsQEl4RAAAFA1EAAAcACxNJR1MaDBcmRgNVDBMGp4NEH2o=","e57ef2903864152b":"YhgTXBZfGyYkfyZ3IxN0eX1hKTBDNXwveXYqFxtGREcNGldTUwUHUlIFAlNBTxNUQw4XcUADV1cSA6ODFkw4","664c0879d4073b34":"YkwRWUReEX8iP3U3QjIkKHQkcDASYnJ7MSF/GHF5MXt7cXgTSBIRG14bAlQCAgAIAgYIUxpORwIVChYjRFZQDhkD8YdEGW4=","405ef71708958b12":"PU4XXUAPQCltbS50FDAqen8uFiQzJnUhYX8ncxJ4LTd5I2gQSBQWQ1sVCABRVAYJDAhQAkMdG1AVCER3QFRSDkYB94NASD8=","db07dccc5c2f8ebb":"bRhAXERfQH8reXR/cTsSYygoYykRYHUofC5+fxcgLHNrdTAQHRsWQVgRAAEBBgADBwBXVRIYQAVHWBR+RVdcCxZXoIJEGD8=","9b7a899ef366e614":"P0pBD0cDE3p8L3J4+ql5QmMnfXlnfnoSdCRjLHVGJScwKnMvciMSGkQTElwQAwUHVFEJUgYHUkBNEl8UXxRxEwVVDEFR+4EUTjw=","86678fd513f47af0":"bUJHXUQKFSlwa3AXJ2p9ZDB6aid1cClCfy1zMCF8Rid5JCd/G05AEBQJEQQBVgkFAgYHCVQQHxpVQwkSdEoAVVkZUfHWEko5","76db51f03b6dbd12":"a08bXEcIEzNtfnhgdDR6QjV8YyFrFHVyfil0fXp6GXlgd35HTREQRw4RBlIBAAcCBFQJBkNIEV5EDhJ0F1kHDRAA+4JHT2w=","8adf22f97e08f35d":"bhkUC0dcGjVjLPWmLix9aBknLHR8fS8qE3UvIHkTIXVuLX0SGhtGEw0RCAEBVgEGBwQBVkEdG1ZADBsmS1ABDBVW9NVHG2U=","c014c17f679f78bf":"PR4bXBZbE2Z4cWR5czQjbxF5c2B2dih2cGhCKTByd0YpLjB8Fk9DQxYLRFNRBQgHAgQJBwsQGxADQF5BJksFVQlFDfCEQ0xp","a7046485fa0bf34d":"OB8QVhZbGmMqZXlwdhFkdStxKWIVYip0ZX1keXYWShRMEgpBAgICBAcDVQYCWxQYF15DW0QlE1BVDEMGp9YQTD4=","7c3e11c78f803fda":"bUtEChADGzVzcCxzIC8VdX0lKiAwECxgc3Z8KXx4GhgSQBICEAMJCQNXBQMACwBAGxACQAgUc0EHUV5CA6CAEEtt","8b6415632515e5c8":"bEgXWkYLGzJxf3J/dyRiFyZ5fG12ZRY1eX97LnRBSRZHGl8aBwYGVgdUBQgFBREdGlRACUd1FFkCXhZX99EWH2o=","52dc6fed1107a2ca":"bkwQXUcCFWUnL3kseCh3EiJ0N3B/IBAoZGNwcHkTHxAUF1sXB1IFBwwAUgIDU0ZNEFZDCkF2EFdcVkZS8tIbSmg=","b3934ffed1ff9a83":"OU1HVkcOQyV+ZiJiIWoUN3AuKDNxPkN9J2V7cmISdCN2fnQqFBQXFkQNFwhRAQIHA1JXAVZAHkdXFgtAdxMABw0WUfrVFhw5","68335632c0d3aedf":"PRhHXEAPE38uZiRrQWIsIWosI2x2PhVqJX95dhFOR0QTDRAGBAgHAAZQV1ZQFU4UAxcDEXQWBVNcGVGgiBdPZQ==","23fa8db7ba9fccba":"OBoSVxBfRHBlImJ3eC4mZRdlJ3pxeTAVMn1wfiJHHxBHGgJGBgZRUwwCDVACVBEcFlJGDkAiRwMGDRkB94UaGz4=","8ace0f7079f88cb5":"Yx8QV0dYR3hnIWV1cXR2EHxmfjd9fhE0dy9xK2VweCVHHRZCE1hHUAcDVgEBUQNVAUZNRgEVD0YjQlcGDBBQo4hGT2Q=","e6bfeb39d86b5c93":"aEwXCxEMFXIzcWgjKxUmZCZ2MCstbCEpJRAlJzN5ehUmdmN/Gh8UFBpYEwhSUwJQVFRSUgEVSRsGQVkUdBAFUVwXAKeDFEpt","fb276f68d01356e4":"OUtHXRIMQ3YldzcieyAyGHk2YnhuekVme2Z6fXVETUFFFgkVV1EGA1ZVVFRSBRFPFAFDC0dzEVYHCkYD84BGHz8=","081ac7b61638fcd4":"YkoWDxYORyJ4NmZmehZ0dy98d0Ine3ESa3t/9bt4RxtGERRYRFABA1EHAwxUUwIVHBMCGgkbc0MDXAxGUPvRE0Rs","f3efc54a8d309e90":"Y0kWCxQKRHo3Ly8iQ3wwIiswd3soNn4nGCR8LnJ5ZXR5Fx8TQBYNQAkDCVEDAlYAUQVHGUZSF1wQfhRYVVxDDfqCFhhr","33b4df4252f8205d":"PR8UVhVcGiAtdmkVNGIvahZmcy4peit3ExpARkFeRldRCAEMUgxSAg4SG0NXQ1tHJRdYU1pGDKaFQBw4","45704b7621fbcc9c":"ORhDCkBeQSFjdy1iLX9ncC8kGW4gYHw+GWonKS19fHwTciA1YTZHHhVAQA1ABFNRA1AGAVBVC0cdFwJDWRtxQAMHDkRXptNGTWk=","e51e676d929a3591":"ak8WCkFfGyNlIHZmdmEQNnF7JXZ9FXJjdXwXcCNqK3Z6cC4TFRAWRAoUBQcCAFBTDQZVXBVPFFNHDRIhQFYBVhEB9tRBGGQ=","8779310680e1d72e":"OUwbWBdeEH42KipwdHQ1E3V5a3MSfHV7eHBETRMQEwwTV1IHVAJTAwYBU0BPQwJBW0dyQ1FUXEINoYFATGw=","c7220c8887a27342":"PR5DWUAKFS0gZnwjfHZ2OBQxMWt/dCIWZnZgd0QfRhFBDBUFVggDBFMEAABUEBkRVxsCQHJHBVIOFwHw0xtJbw==","895997aaca05cf06":"bksWVkMPR3gjeSJndhkzcXt9dHAnZkQsYnB3fXkUYyoleHUQShZDFV4bVQQJAgVUAgRQURNPQVRAXxIlRgVTDhUF9ohDSDg=","a7c446677a245b2a":"OkhHCkdfR3t+Zyc5QXpweyk0dHwjFX1+LHwoeRVKQUQVDhFSAwAFUwBXCVIDEB9HVRELECRBB10MFgGk1htNOw==","d061da381cdc8082":"aEgaCxNYRnkjf352GDZxdmFEKzB1LUR3cHorenoXFBBMFwISCFIBVlBVAwlTUhYYFQNEChFxRQMFXBcD+9YTT24=","94f20d8e2bd0f1d4":"OElEDxNeGi9wMyUjfHwYcXN0eCgvdmN9ESlley12eHcUHUMTEAMVCQEDAwUFUAUJUEYZFlVEDEB3EANdXRcNoNMQGzw=","4212d7754f64dd4e":"OB8SCBECRGAqYTEkL3kQenR1djcVMCR1JGJmeScqEShwZHlwNBtOQBBECURSUwEDDQUCBFMPERQUUBNYE3BHAgcLEFPxiERNOA==","cb6a1c70b2d28094":"b0hAWhsKFGRgNS1FcCAoJ2J0enoZIXYofiF0FXZ6KiJrRE8aFxIMFFNVAAQFCQwJBwRAGkMEQ1wachZUUl0RDfaDQEkVSxRaF19ANWc1LUZycH50ayR5KRcgeXt6cy9DfSoqeTESGhQXRwoWAQkJCAMDVAdQWkNKGlJGDxR1Q1lQXEIC+4AUSWg=","7c4c13cabda25184":"OUNBCBJfFGV2Ly1kcmkTcHB2MCB8dmNCKXR7ZSEpJxEdEU1HWRMAUlMJBANQB1JZQRtAUEQME3RHB1xaFw2nhEBFPg==","7eaa7394eeba14a1":"Y04QCEYCEjZzfH43fT5GZGR/eWV3fixGe3Z7aiBjZHBlQ0oaTBUMFFMDVFZXCAwGBQARTRVXGwIXfkBRBVsQBPqFEBs5","081a1c0752e8f5e4":"bx5GDxAJEWUif39qRnskfTErdEQgd3UZcCB2MHF3KHUTGEBHFQgUAAlSAgFWU1cCUhMbFFIbDEYkRFNQWxMC94RHGTw=","801a9922451fc7ec":"PkJEWUFbFmp1eS02Qyp4MSQ+QX0tMmZ1Ex8URkELQVRTVQINA1ZQBFNEHRtVFA1GdkFUVQsTAvqHFks5","448d534ef36c3987":"OhgbX0dcQWdyKS0xRjZ5dmQscW13O0FieyIvcxBIF0dECEEBAggFBAUMBgQBGhUVX0MDFHVFUwAMQVShhRtJOw==","42a63bdeff7b580d":"OU9BDRQDGmB8fXQUdSssP3h9cz8TN38lZCkxeHFAGBEQGlsQCQJTVAUBVgAHAEdNElJEA0cjSwNWXRYFoIcaHD8=","11ef9913901917bc":"PU4VDBMPG2EsYWt0LWB3FzcxcWokfSUXe2UjfBQifSYlexUUFUMVDEBQVlEGDQdXVFMCFk5HVxJYFX4UUQVXEFP3h0BMaA==","40939541201cc26c":"PR0TXhsLEDB4IHsxeRcgdyxxLXwWcTBweyModScbTxNDRwgSUwkJBwEHBlVTUxpPElcWD0NwQAVTDBEE8YkUHzs=","9731339ea0e2d244":"YhoVDUQCRmB+L34lfSRwQnR2fSZ3YnZ4EWouciolRk0QRkAJEwVWUlQHVlZUVgZGHUFXQ1xEcRRSXAlEAPaGREQ8","e2de4eb75fdf320d":"Pk5BWRYKRmIvdSkgaisqQ3VlZXtyYTQnbER3eStzMndFcSgjMSB0eRUcFUIUDBdQBFYFUwFTBANTE0oVX0RfFSJHAlNbEFH21hsYPA==","21deb51da922f985":"aUhDX0FYQG9xeSNoQzAifH9yeRl0dzd4IxYkKDZ7e3wiRE8aExIDFAYGAVUACFEDAFsTFBVREFwSd0UHBlgXBfCDQ0w+","cd9214b5267ff296":"Px9AXBsIRCQwan9texN7cTYyYnRuRSgidykheEMYQEATAkRVCVYADVVTVQdYQU0UA0deFn5LAFYMFQLy0hZFOQ==","0ba119d2da8444ea":"Yk5HWBJcGnMtfkFndSx4I2ItdEF4Z3d4RCR3Kn5oJhsUE0IQDBUDBwQAV1ZQVVVSExlAV0AJQSFDBQVbEgyjgRtIOA==","a4460109d5b2286a":"aEpGVxMMRnV5a2VxfiRjF2l2JngudzV1FHZhbCR3dC0UGhFARF8WAQEJBwQJBgcKVUBNGwIQCxJzRgdWV0YBoIMTGWQ=","59e7efd492a838dd":"Oh8aDUQNEXNlKH8lFWVzfWJ7a3ARIXMsKnx/JxR4ZXR9IkBIRBQXWxFVBFJSBQYEBQNTFB0bBRMDRyFDUwELRlemiEEbag==","a5f01ca0ad85194b":"aUMRWUYCQCducn1zFyIkYTJyIHJnEC5zdS4gQx4RR0YMEwQBVVYMBwFXU1YXH0MCFF4UdhZZBQoZBqGDQxtu","7ffa70791db89352":"aEJHWxAPQHY3fXkycmQTMHogeiJrFnJ9NiwqKy56Gx8aTBYPFFQJBQhWUlQCA1UQGRNUF1gbJBEFAl8XAvGGFU5k","0e91ae50248523fe":"P0kbXBZfEnd1RXt2Qit3PEIwcGp3fSUVZyd/eyh6Lxd/f2AgEBwVFxYKFAgGAFUHCVUIVVVBHxRfEg4bdEAFAgsSD/CER01u","13faeb943d6c7abe":"YkIQXBENEyVwGConRiw1N3VBNy11L2ZCMnd9IHhleHd0FkoaEEBcQ1JVUwYMAwQCAVZDFRBeF1lGchQHUF9CB/uJEE9u","5354ec971706cec9":"a0pEW0ALR3NzQ35yN3Q3RjZ+Z3x2JX50LnlGa3grYSZ4FCR5fDEkYxEaR0AQCUZSBwRUUAMFAAQOQ0oRBhcCQXdDB1ENEVP1hkFObg==","13dadb077fcbee61":"OBgUXUQNQHJ1MSZ4eRVxKy8hfRdydCFifHB5IBtJFBcaAhIAVFYHBVNXBgUEFRtBUEcIE3JBVFILE1P31BdNaQ==","b251aa70b51d4f19":"bkpHCkBYFXIreCZvRiJ3MTArdC8tQiw3JCxBcGFhcHUnLRAdQ00TDxMIVQdTAQkHBgJaEk4VBhoKR3BBA1QOQgPz1UYfPw==","997883cd51fc26b0":"aU4aXBRfEHh9MS15eHx8OBAgLHNiQnFjKiFqYC4SLiYhLX1kdBJPFBQbDhcFAlRUVlQBAgcIRxUTVxVZFSNCUVZaGAT01RBNZQ==","2fccc40fc445da22":"PR8SCxcPGnt8fmQpankVNCD7pSBmIhM1dnk1KnUhdxNOFREbDEYFVFFWVwYGVwZUQBhAVhVeFyZABFZZEFT1iUQZbQ==","8e7696b2ce5db615":"b0wWXxdeGnggcWYgZX1EMHcmckMrJXx0fXYaHhVBFg9GUFEAVAVUUAABA0EUF15HXht1FgAAXEYH84MTHz8=","88050508eac13039":"bBpDXhFeEjYldXojcn9EeHN7Y3AXYiBhJS5EGhBAQw5AAVIAAgcGVAlXVkRIF1MVChp/SgNSXUQB9tNBH2Q=","3394428facff3a2f":"a0oRXxQLQDR4fHB4dSNBZ3UwfWMSKGx0cSV3eUYbEBBHCxVQBgYBAwlQCAYDQBtHAhMJGiZKUwBWFgCk1BsbPw==","3d3927fae64edca5":"Y0lGCkYPRjV1bXlrITAYdTQxeXFnanJiQ2N5YTInenJGGBtNGwxDBlIBCAEFAwYEBkNJEAQbWUAiQVlWDBIG9IgQGTk=","e82292f94aaf1005":"P0sWXRIKEmkkM3Z0bCsUJ3lrey0tFX1jJHcgL3UlEB0SQxYPRghVAQYFU1AFVQYQSRoBEVkafkFWXQxFAfGJEBlt","74d43eedc92e47fb":"aUtDWUZfFzN3P3FiGDF5f312EislanF3KUNKRxAaDREHBlQDBARTVFNSFhQVUBVYQXIRVQcKRAb7hBFLZQ==","3ea1747ed54c3a29":"aUNECxpeQ2J2dTF/fzdybUZ7KzYwInVxZRB4LHZ6KHcTFRcXRllHBgAABwUHAQJXBRIaFFJDXBp3QgBRWxEA84IaGzg=","61b934bcbf604d61":"PhkaVhRYRHU2MXg7Lhl9IGtgbCRqEnpyd2N0fnQXFRIQEgISCVUJU1BTVQdUW0AbFVAbCEEkF1BVWBQO9tNEGTg=","39887f152b4905c5":"PRgbXhVeRDJgYy59fy93QXAieTl4bBExIDd0F08XRxYOE1RWAFUBAwIIVAFBHhMDFw9Dd0FVB1xFDvqDF0Rt","a03fc5842ba88905":"YxoWWRsLGjOg6zNwaxl29fcvd24RJXJ/JzYycBUaQ0AQAkZTAgFVVwQFV1MIFk4SVhsIEnZFAAJeQgTwhBsYaQ==","c390ea1c352864c6":"OBpDDBMCQScmYiVzfhJ2ZytsNCRweBZzYnJ6ESh2Y2IvfUMaRxBDDRYBVQgJAwlVVQIAFh9EVBIDEnAWVQBdF1Sj0UBMZQ==","6c4d6cdecd4e4b97":"OkxGWRIDQHF1eH40Z38hfDBgFnZgdiR6Ri1wJX95dzEaHBYXElwSCQYCBAFWAlIHURIbG19HDhZzRAdRDEEOpNEVGWo=","99aedc73b9f4402a":"OU4UWxMOFSB0e2cnL3xhFnczM3s9KUIocCJ4e39wRxpBR0BYEwgBCVZXBFNVUlFHFUFQEQxGdkQFAFwXAaSFER9o","c4ffca112da294cb":"OBkRXRYDGnt5YSAkNyxGa3B5dXwnbxRkJSpzLhMaQ01HXBUBAFQCUFEPAghWRBpBBRtZFXdBBFBaFgD7iBVEbg==","6071c4a7992e70ad":"bBgXXxUOF30sd2sSem17NTB1JXlBKzN1K3IqJRMeR0xGC0cFB1VSVwEFA1UAExtEUBMLQHQTWVIJGALyhkNLPw==","d53765e6bc8a4337":"PU8WDEMIQHE3en5jfH42I392FGB0YnBuEHYsI0EyeHQxeWcocEQaFUUQAkQJBwYGAQlRCQZVQEpAAxEIFSJGBQJbFFWjgkBJOQ==","4f48c29447c722bf":"bhlDD0dcEiB/fTAmbxUyYHAzI2oYdX17anF2cmwtRk8WRBBYEwgJBlNUU1YCCAZEGRYDFg0Wf0tZXF8ZDqeCEkg/","9f24b34192bfb2c0":"akIbWRMOEnZheXl1dCEwEygsYyJCfiRmKHQrcUMdFRAXW0cBBQJUUAhUVQhbEkoWUBIOEHVKAl0NRgD7gBEeZA==","394d1804b1b0bf6e":"bkNHDxoLQX4pYH5iGXohLHEhb0IvdjIkRCR0IXN3diAxLUZIEUdBXkNSBwRTAAQOA1ULFEhEXhMMG3MRBwVaQwL61UNFbA==","cd86c01e9561b39c":"Yx1HCEQJESwoLHIvdm1GMX19NXcYNSd7ZHF1dXdCIHl1YHAyR05HTEBbRAcEAwcCAlUCBlQRSUQDEggQIUVVVVdGUqTWEU47","df396e40981b6972":"OEMSC0ENQCl3L3VlI0ZgcCp4Jn9zNkUremAmFHYqJislfHEwfRQeFE0VDkACVgMBVwUCAAEGQxwQXhENFX8UBQdXEFKhh0AYbw==","12e15433c484e417":"axpHWBQORyktZHNjcxB1IjNzeHASZC11NXZhLXAWHEMUFA1DAwFUBQEABQEABUEZE1ARXxsjQARVDRYD8IhDTW0=","d6e6b4268fe9be55":"P0JGD0dcGntwKmwkJkUyamcsfi9+fEF7MSQvRTUndH4uER4RRxFcFAEGUwMGAVMEV1UTFENVG1kXf0FWXVoZBKaJRhw4","a95c1ed0dcfabc03":"bhgRDxADQHwpfGwtc38YeHdjdzYzdkNhd303dn8QTRsQGgobVQgIBQUGBQgJDBMVFQIRXBR/QlFSXhNU8IAURGg=","8da4d55eaf9564e4":"bR1EVhcKRngqb3olGDJ4L3F9I24Wc2V8eSh1Rh1GQ0YDQQkAAAgMVgRSAAJGHxdUFV8RdhNXAV5BAKHVRE9l","4461aed32b136048":"bkgTVhINE383cXZ2fhN1ZWV7LHEvfWREaiR0ZnN4QnxwYnggQRUXQUNeFFQFAVYMAVEEAldBTUNQEg0XcxYAVFoTBvqAFUxt","3cbd7a051e3ce148":"YhhDXkYJQWFjIHh2GS5xMm0zcBByd2YhIxJzJGJ5cEBKG00bCxQIBAIEAwkCBQQCFElAURECFHIQVFUNFwSjgRsePA==","4f21b2da50573ea7":"aEhGWBJYQGE2LyxlcjB2Q2R9ZzR2axZ6dz18dS19eXMqKxNIGhMQXBZVVgRRUwgDUAVeQx8RBBEKFHVGUwUMEATx1BRNPw==","9091e79e3fdf99b4":"bh5EVkdfQDEnK3ZlFDcrc2Yqd2VxYxZrcHhkcHtGHBpARwtGBlUEUgEAAgAGCxFKG1FACxRzEFRXVxMB8YRESmg=","37efc5ee659e2ab2":"aksRV0dbE2crenhhdn4WYWV9YngvECEifXBxfkIkdiE2fDBAGUYUGgsXAQEBU1QBAANXCBseEwJGAxIkFFFUCREH8YlHHGw=","076a87d446ced0cc":"a0sQCBQLRjQqIjZxIzckbRF5J2V7cnZ8cGIYYy5yeXBDTkYTQQ9ECAMHBQAED1QKUBEVRlVBWEZwQlQBX0EHpoASTzs=","483d4e4ae7e0e9cc":"bkoVXUECESR7dzcvMkV0KX4haxh+JGAwMkEvI2UtKic1Rk0VE0ENGgAHVgYEUQ5TVQUWHEQGRAkRdBdRVw5DAfeBFU4+","37a1205c8e098be3":"b08VWxQCFyVndTR6fCV+QXs3KzMteRgpMHJ6c3gjGx0RREcOEQgBCAdWBVlSAldHTRMDQ1sRcxBXAV1CD/KFR0lp","7b7e94409437515c":"YhkTDRsPFnYwdi4wJWYWYSwkeiU1FzIkfmMsJ3d8QBsRFxAPQ1dVUwZXUw8DBgFBHhteGgoTdEEAVg0XCPHVFkQ/","3a291bc6597b0806":"YkgXWBJcRyUifiZyY0QzJCZ6fXArGHxmc3ZnQxoUFxAOFVIFVQMBCF0JBgVHFRFVQQ0QcUNRAg4YXfbTEhtr","bd3d3ed839e868a7":"Yk5GWRoKEXMtfDBrdzF4NRA3KisgN3hBZ3xzeXEbGEAWR1kRVwZVUQEDXggEAhAYGl8SWBF2RFYAChULoNMQH2Q=","299e8293af3abb49":"ak1BXBoMGiV4ZTdwMhZ+eX17eRYqYX81RXAjf3xjdhEVFBYaCUAFBwhUVwEKUgIGEU4QVRpeEHRAUlNXFQumhRNLPg==","d0d3548dc1196a09":"OUtAWRtcEnwrdGpBMGwoahQ0L3ZjfGRweEMcFRBBXkAAAQBUBwhZV1FUQRRABEZcGiZBVl1WEg7y1hNOPA==","41a21ef037a41dbf":"Pk1HX0ADG3d2L3c7QWMgNHZ5NhgvZCIsFHd0eX5hI0BNEU1EXhQCUgRSUANeVQFcRhwUU0ZcQSMQWQAOFgD6iEdLOA==","be416667a921bfea":"bh0QXxYDEnUqezlyKXJpEm4heyRrFWtwcCcidEFNEUMQDBIBAlZRUQcLBFMKQRsVBENYE38QVAdfEFv0h0BIOw==","8dc1edd5157ef544":"OklEWhsOEnFhYHx2N2ckbRJ9c2B/dS1wJmwTJnAjNHEheXlxEEgTEBRfFwMGUlEDAw0IBlMbH0NVFl4TcxcFVg4SXvaJFk1r","3a8af4375b8839ad":"bUwUDUcJEy91YGRwfHVtGXd4cmd1ZkJ+JyxkeBUgKGJ8aGV0G04QFxVYQQlRUgBUVAoHAlJBSkAEFQhAJBFTAVkXDqHVEUw/","8ceb4a619df9b8e5":"YxgSChEDQCklamx/K3FtFmMpbiUxEiAvcyYpdxV4dmB5eBQfFUEbWRoIVlIEDVQMV1NXGhkaBhcLFyNFUQBWEgChgEZOZA==","8d2f0b544b75b1ed":"ak1BWxILES8jKXF5RSYjeHJqInkqQXt1NixzehF0JSZnf3J/chcYRkwbChoBU1ZWBlZcBlMBRxsTV0AIFyZEVFVZQw3ygREfOw==","bb663f51de80e1c0":"aB0XWhEKF3gmfHoiECx8dTcxIxh9cXgsKHVxGxRGFEYKE1MCUgEGAQoIBAIXTUEDF1gXI0dVAF0XXaSHERhs","4b5a1774f4ba0d5f":"PRhAXEMIFSomJX4mfxglNH0sMnNgRHFhdnV0QE8SRBJYQQBSUglRB11UV1ETGBBTG1wXcUtQB1dEXPKJFUlk","263c8d20726f5eea":"bEJBWUYMEHxhaSh7dEVjeG0spakpFS8iZH95Eyd8ECh8YxJ0eyUnKnZiRBkQQBpbEwVWUQJRVQ4AVQBEShAGEA0bJEUFUl0TCvvRF0g4","3a7680e194c742fa":"P0pAX0NYGn43fScgfRRwN2V9fnApdzAVK2IkLBhxL2J3LX93ERgVQ0dZFQAHBlYDCAsIVVRDGBJUQAxEchAFUgsRWvPRQEVs","45a9aa710f0944d5":"PkobChJYGmMjayBnFzUge311QjB4e3RjeHJEFRpAFlkWVAkCBA0EWwFQDhsVEl8bW0Z1QVldVhdZ94UWTjk=","d1d303cd918d44ed":"P05DXkQCEmRwc3twKWNFNnx8N3EmZyc/Q39wNi95Q2d3akAZFEQWD0RSU1MAUARcBgAMFx8TVBcNG3RBWAVdGFz30RIbZQ==","cbd4ab239947e1e0":"PUoRDxIIEDJ1aWEoN3d2cRN6N2J5bRJzeH18JRUdEEUSDRJTAlQBAQVcCAsERE1DVhcPG3cRVQINRFqg1kZJOQ==","29e611d98ba11af4":"PR9HWBsMRjd0NS1kRX17NXw/GGZxdyR1I0EeFkwaA0YECANVBAIBV1EFGx0VARsDF39CUlwJEgig1UMZaQ==","d3c5605bcfe89de0":"Y0NDW0NYQWErYyJ1KxAncSBrJX9xMRRicnVxM3wZeCs2IBcfQUQTXhEIB1RTU1UMUwYLFUkVXkRcRiYXWVJWRQD60RccPw==","e97844a5176133c1":"Yk0VWBMIRGAnKnN5YCgjOX8RdGQkLXErexMocjMscBh2cjR8eXh2eRQbEBYbXhZTBFNTAlRcCQBQEE9DUhQPRn5EVlJeEl701kRKbQ==","83750d4c86593b73":"bhhBW0cNEWF2fhdxenR0dnkUK3k7eWBGYHh9fWVzdxcfRxZGD0AFA1FVBAcNBFRRGxpEUxNeRnVGBFZaFlqm0xcePg==","4281c67fb914ac68":"ORpDCkYJRn96MyY7QjB2cmJ/I2cjaBN7NSBwJnwpIhBKFRdDXhoJAVZSBgkMUFANEE5HVxYOG3dEB11bFFryiEAcPA==","99137de699a3ad3e":"bEgSCEYKEHFyL3V9IHoQYCc0LHdlZUQudTYvd0Qkfnl2ERoQQRUNG1IHUgECBg9XBwUVTxpRFl5DdUdXAFdCC/WDEhs5","904af05b62334397":"OR5GXEFfEXoiKCZyfxcrcywoJEYqZHxqIn5xRxkQRUELRFRRBAZQBltVBgZBH0AGG18WIUtUUV9CC/HSER47","1125aef32c1aba3e":"bRgQXkcJR3V8dzUwI3YyfBUqdzMjPxRiKi5hdCh1RxgaERACQQZUBQEEUggIUQRBGBJVR1wSdxFUVldBDqeIRks+","a32de67c76cf02a9":"YkNHXkFbGid6IDwVITAvbGsncCkWdiRlI3onLhMnfigjYBseE00aC0AEUVMJUAFdU1UDEE5BBRteRCFBAlxdEQD61RIePA==","d3618faaffde76f8":"aBkRDBYLEHZkanh5dHsSJH57fWI3NHA+FGolemx/dnAqGh1ATRcIEgZSUlIFAg8EB1QWH0YERlkUcxcABw0VD/HSER9p","e20e2fcd1b3ef8e2":"bUMXVxpZFHRiZ3J3YSEUeHBtdCJ4ECpscH8jKyAbGxpGGg4UU1IJAwIJCgkGVBocGlEVCxpwFFJQWxMN94AVHGs=","9a04d159d0938b45":"OkgQCBZbEn9kaX0kfBEpd2plKHkjOUF/cGdgcBM3JXgmLDVwKnVETUEUFlxABQNTVVcGCAgGAEQdQQVBW0ZzSgBXXUYNo4AaTG4=","c04e5d8debc86338":"Px4UChteQ3BlL3B8cjkXL3x2L3xnEC4zIXh2eXAUSENCRAIQAwADVgIHC1QHXkcUEl5AC0MiQFQCXkZb+tJAGDk=","6933d46c417a482e":"bBkXXxRZRyxmLnV+IGpDLX0kdy5kGDAnLTJ8d352RB8XFkQDFgEGBlRWBAEIVQtGSRRXFFlEJRACUF4YAKeBR0o/","4574d47768d1dbd5":"OkxEWxBcRyp4ZXRjEHN0eCs2eXF5FngwInImeX8iQRwaExNeRFUJBANRB1wGVFFDTRsEQFtHdhZTAglGD/XVFRxq","3fb9caec79cbcfed":"OEsWWhMKEy95aiV9LEQjbTAlK2FEZC12eHp0eiUWHhFEElgTVARUVlNSC1AJAxFNRlYQDkQjRFkCWhAO8IJATk9LFloTChMveWolfSxEI20wJSthRGQtdnh6dHolFh4RRBJYE1QEVFZTUwJQCQERTUZWEA5EI0RZAloQBgLw0hEebQ==","6ca62d6754dd8ffe":"bUgbC0ZYGn14YXd9fnoZIGFkdCtrQTFwKGZ3LRgsKmN8ExxAFkYLQQgIVVEFAQgDAAASTRJQGw4bdUZXUglCCfSDGxg5","5fc632e968c07690":"OR8bXhUCEmRhcyx8ECx8Z2Zrd0J7djEwcSojQxoWRUAKQQFSAQVUBF8HUAsQTUdRFQoacxQAAloQDaeDG045","daad2f52d87610e5":"ahgTXhBeEjF1fi4wFSAlMmx8fC1+Rn8gJmF9JC4nE0lHRBpfR1NSUVZUAg0HCQMaGkReEQkQJBRTUl4SWvHVQEw+","28a887c26e05b29c":"bEMTCBAMQTdxJHkTcXVmLyB+c3Y5F3MnMXx9d3x3Rk5DQxVZFwgICVIGBgwHA1AbSkMGRg5HdktRBlhGAfWGQUpl","da83d71576106d50":"Px4UDEYPFW94fCd3ZkZnfTF4dGQwFSxjdn0ZdXB9e2RwFBoRRBVbRwFVCFQCAg1XVFBAShQGQVgaJkNTUFxEXKbVFB85","3f0f637fa57dd677":"Y09ECxBbQWV4eS16LH8RdGBzKmV1ZEJxciMxenJ7JURNEEVBCRAHVVEGAwZbBFcBGxwTAkYCQyFGA1YLFwzz0RpJOw==","8e65cf8a3390c837":"aU0VWUENGy52dih2GDNnf2EpYhEuJ35kdyoiFXAjM3Z5eHNyQ0kUTRcNRgYCBgVWVAwJUFsaT0NQFA0achZTXF0WDvXTFUQ8","4fd18aeec8115ff2":"bxpAD0BcQCEtI3pnNH8hcGFsRnlncnJ1GTJ1fGd+J3F2FBVAQEALQQhSVggNAgYBVglHGkNQEA4XIRZRAV0TVASj0kMfOw==","d7f99d3778fdaf95":"PxkbWRQCECV2Znt7fRl1IGZ9LS92FH14fyVwQyMjfCd9GxQTTBtZR1dTAwgHCVEABAAaSRcBEgIRdRYAVAwRCFSgiRVLZQ==","160ef0a211844195":"PkMTWxECF318EyknGSc1Z2B4dy0ueBR/e39uI2MtQX4wJ3FwRHUkLywgKkYeExRADhYGBQcJBgABVQlQFB0QU0cCE3JBWVFWGQJVpIlAG2o=","01f245165da42a03":"aB8RCBReE3d8dzhGZHF6cil0EHVjKGMYd31+cnsXSUMTR1kWUwcGVldUVQEGUkEdEQZGDxZ2QwJWVhQJBvaBG045","5c0e953a0b9c138b":"Ok1EXBsNR3AhYCxzdiEmYkJ+eGVyO0EoZHN3ECsjYzFxehFIQUcUXkQBVVIHBlADBwJQQ0gTUUECEXNKU11WFlAGpIIbSjg=","835b1f32b3708527":"bUkWX0deFnZ0eGAkaBYrdDN+IChwfDwWL2F5exExJHN2N2YsIHhDGhBDGwNACQFWCQcBBwcCBhUZEl5DXhB1S1dWWxFUVPaAGkpv","5cd3442cef648014":"Oh8bXhQNG34mL3x4FmQteWYVdCdjfyVGcnknYnEaHxdGRw8bA1EFCQwHCVUBAxpIElFAChR/SlMHVkJUAqSARBw5","fcd0039d022003db":"bRlAVkAPF3pjfGl1KRRxdiA3eXUmaxItfHl9eGJ3ehN3dCsocClGHBVDFV4bAVIBCQEIBwkJXhMUFVISCxR0EVcGDRhTBfeFE05u","a993333451322122":"OEkWXBRYRmR5LH1hQS14ZHw+RHxkfnpyfxUhcDJ9JhIaQRQRA0EGAFMBBQUDUgQAFh0XBBNZGnJDVlBaRFNT+9MQSW8=","45d650581ececcb4":"P09DXEADRjAzKz4WdHhndH1nFmIianAaHxJAFA9DBAcAAVMDBglUAxtOEAIaX0N0QFYFWRYBB/fURkRk","662cf01725924073":"OUITW0FfQ2ckY38iQy0tfjBxN3NBN3V+cH9sendyGxlDRxMDR1UBCQRXVAUFBAZHSkZSEAsUfxEHUQkZAgjziUBEbA==","eafac096f4a4e2f2":"ak0aXUFeEDNxIiQuFGkifXZpE3ticyB3fyl2FRkRExtYFwdTBwRWVFYIBwobGxtWRwwWfxAEUl8UVwT30xAfaQ==","eb763b9bd4b07f57":"akMaXREIFiAsYyUtfBF6IC8pIHtxYhI3eCl1LzZ7dnQbH0ZGEAMXAQEGUgFUVFdWBUEcGgFGXhp/QgJTCUFQVPOIGk5u","386f7e20aecc2c35":"YkgTWkZbQy16bX5jEmd0MHVoRDciM3ksFmZxJnJ/fnh6EB4bTRBcRgMEAFNTVAZTVgtGTxEDF1xGJUQCVgtFBQjxgRYZPA==","b4886afaca60c877":"Ok1EVhMNGywgM20sd3w/EiVwf3d2YioqRGsnezB1KRBKRkNGDhQJUQlUB1UCAlMEExtBUhNfRnZLWVYLRAYBpNEUG2U=","67b23e420e3a2167":"PRlEDxoMGytwLnp3QXR3dmF0ZnkZeyU3fyNEJXYpLXUnEB8aQRtYRwRWBwlRU1QIA1ERSRdeG1gbIxBTXF5BBFeg1kNFaw==","f43c9785c098a454":"PUITCxMKEGkjanBjGSB9cGlDeX9kc0IkZS0qKSZiLysUFREWEAMUV1FTAw1XUgACDUZPRF9EXEZ2FlgCDhNTAqSJExhs","653094c4fe94da12":"bEsQV0YLEmN4eHcwEXUkYWd4f3t8ECB1cSRnEHt5YSMRFUBCEF5DUAICBwBVA1cAU0cUQQQXChsmRVAHWUYABPWAEEQ5","2c9556505c2927db":"aRlHWhoMEWp5dC1kQyZheXRmEjUgfXxzFkhGTEACFwIFUVUGCVAFBA8RG0RRGwsadhBYVA5BUFf1iUYfaQ==","4f8b26afd0e1bd0c":"b0gQVkAIRDB7f3M1FjJwfHBxfWJCKHRgK3kWdSQYfXw2FHl/fn0ocWNATxRCQw9HBAIDBgRTU1IJDxAeE1MaChZ0QFkGXUZTBfeCREs8","68cacad615b6679e":"PRoXX0MKEGdxIngvFD94e3BsQiJ3JmN7IygSJHt7dzZHGkNMEAsVBFUDUgAAUwIHDBVNFVUUCUd+EVIHWxgHUqTRF0w8"};
+
+        lucide.createIcons();
+
+        const docInput = document.getElementById('doc-input');
+        const clearBtn = document.getElementById('clear-btn');
+        const resultContainer = document.getElementById('result-container');
+
+        docInput.addEventListener('input', () => {
+            const val = docInput.value.trim();
+            if (val.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+        });
+
+        function clearSearch() {
+            docInput.value = '';
+            clearBtn.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            resultContainer.innerHTML = '';
+            docInput.focus();
+        }
+
+        // Hash SHA-256 irreversible para proteger el índice de documentos
+        function sha256(ascii) {
+            function rightRotate(value, amount) {
+                return (value >>> amount) | (value << (32 - amount));
+            }
+            var mathPow = Math.pow;
+            var maxWord = mathPow(2, 32);
+            var lengthProperty = 'length';
+            var i, j;
+            var result = '';
+            var words = [];
+            var asciiBitLength = ascii[lengthProperty] * 8;
+            var hash = sha256.h = sha256.h || [];
+            var k = sha256.k = sha256.k || [];
+            var primeCounter = k[lengthProperty];
+            var isComposite = {};
+            for (var candidate = 2; primeCounter < 64; candidate++) {
+                if (!isComposite[candidate]) {
+                    for (i = 0; i < 313; i += candidate) {
+                        isComposite[i] = candidate;
+                    }
+                    hash[primeCounter] = (mathPow(candidate, .5) * maxWord) | 0;
+                    k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+                }
+            }
+            ascii += '\x80';
+            while (ascii[lengthProperty] % 64 - 56) ascii += '\x00';
+            for (i = 0; i < ascii[lengthProperty]; i++) {
+                j = ascii.charCodeAt(i);
+                if (j >> 8) return;
+                words[i >> 2] |= j << ((3 - i) % 4) * 8;
+            }
+            words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+            words[words[lengthProperty]] = (asciiBitLength);
+            for (j = 0; j < words[lengthProperty];) {
+                var w = words.slice(j, j += 16);
+                var oldHash = hash;
+                hash = hash.slice(0, 8);
+                for (i = 0; i < 64; i++) {
+                    var w15 = w[i - 15], w2 = w[i - 2];
+                    var a = hash[0], e = hash[4];
+                    var temp1 = hash[7]
+                        + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+                        + ((e & hash[5]) ^ ((~e) & hash[6]))
+                        + k[i]
+                        + (w[i] = (i < 16) ? w[i] : (
+                            w[i - 16]
+                            + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+                            + w[i - 7]
+                            + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+                        ) | 0);
+                    var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+                        + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+                    hash = [(temp1 + temp2) | 0].concat(hash);
+                    hash[4] = (hash[4] + temp1) | 0;
+                }
+                for (i = 0; i < 8; i++) {
+                    hash[i] = (hash[i] + oldHash[i]) | 0;
+                }
+            }
+            for (i = 0; i < 8; i++) {
+                for (j = 3; j + 1; j--) {
+                    var b = (hash[i] >> (j * 8)) & 255;
+                    result += ((b < 16) ? 0 : '') + b.toString(16);
+                }
+            }
+            return result;
+        }
+
+        function xorDecrypt(base64Str, key) {
+            try {
+                const binaryStr = atob(base64Str);
+                const bytes = new Uint8Array(binaryStr.length);
+                for (let i = 0; i < binaryStr.length; i++) {
+                    bytes[i] = binaryStr.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+                }
+                const decoder = new TextDecoder('utf-8');
+                return JSON.parse(decoder.decode(bytes));
+            } catch (e) {
+                console.error("Error desencriptando registro:", e);
+                return null;
+            }
+        }
+
+        function xorEncrypt(jsonStr, key) {
+            const encoder = new TextEncoder();
+            const textBytes = encoder.encode(jsonStr);
+            let binary = '';
+            for (let i = 0; i < textBytes.length; i++) {
+                binary += String.fromCharCode(textBytes[i] ^ key.charCodeAt(i % key.length));
+            }
+            return btoa(binary);
+        }
+
+        async function handleSearch(e) {
+            e.preventDefault();
+            const rawInput = docInput.value.trim().replace(/[.\s,-]/g, '').toUpperCase();
+            if (!rawInput) return;
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<svg class="animate-spin h-5 w-5 text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Consultando base de datos...</span>`;
+
+            let records = null;
+
+            // 1. Consulta en servidor remoto si está configurado
+            if (REMOTE_API_URL) {
+                try {
+                    const cleanUrl = REMOTE_API_URL.replace(/\/$/, '');
+                    const res = await fetch(`${cleanUrl}/${encodeURIComponent(rawInput)}.json`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data) {
+                            records = Array.isArray(data) ? data.map(r => ({
+                                n: r.nombre || r.n,
+                                u: r.usuario || r.u,
+                                g: r.grado || r.g
+                            })) : [{
+                                n: data.nombre || data.n,
+                                u: data.usuario || data.u,
+                                g: data.grado || data.g
+                            }];
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Fallo consulta remota, usando bóveda criptográfica integrada.", err);
+                }
+            }
+
+            // 2. Consulta en Bóveda Criptográfica SHA-256 + XOR
+            if (!records) {
+                const lookupHash = sha256(SALT + rawInput).substring(0, 16);
+                const encryptedPayload = ENCRYPTED_VAULT[lookupHash];
+                if (encryptedPayload) {
+                    const decryptionKey = sha256(rawInput + SALT);
+                    records = xorDecrypt(encryptedPayload, decryptionKey);
+                }
+            }
+
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i data-lucide="search" class="w-5 h-5 text-amber-400"></i><span>Consultar Usuario</span>`;
+                lucide.createIcons();
+                renderResult(records, rawInput);
+            }, 250);
+        }
+
+        function renderResult(records, queriedDoc) {
+            resultContainer.classList.remove('hidden');
+
+            if (records && records.length > 0) {
+                let cardsHtml = records.map((student, idx) => `
+                    <div class="bg-gradient-to-br from-emerald-50/90 to-teal-50/60 border-2 border-emerald-200 rounded-2xl p-5 shadow-sm animate-fade-in ${idx > 0 ? 'mt-4' : ''}">
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div class="flex items-center gap-2 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+                                <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center">
+                                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                </span>
+                                Estudiante Encontrado
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full bg-faro-navy text-amber-300 text-xs font-bold">
+                                ${student.g}
+                            </span>
+                        </div>
+
+                        <div class="mb-4">
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Nombre del Estudiante</p>
+                            <p class="text-lg sm:text-xl font-extrabold text-faro-navy leading-snug mt-0.5">${student.n}</p>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-4 border border-emerald-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Usuario de Milton Ochoa</p>
+                                <p class="text-2xl font-black text-faro-blue tracking-tight font-mono mt-0.5" id="user-code-${idx}">${student.u}</p>
+                            </div>
+                            <button 
+                                type="button"
+                                onclick="copyUsername('${student.u}', ${idx})"
+                                id="copy-btn-${idx}"
+                                class="py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-500 text-faro-navy font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm shrink-0"
+                            >
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                                <span>Copiar Usuario</span>
+                            </button>
+                        </div>
+
+                        <div class="mt-3 pt-3 border-t border-emerald-200/60 flex items-center justify-between text-xs text-slate-600">
+                            <span><strong>Contraseña inicial:</strong> <code class="bg-white px-2 py-0.5 rounded border border-slate-200 font-mono text-faro-navy">${queriedDoc}</code></span>
+                            <a href="https://miltonochoa.com.co/" target="_blank" class="font-bold text-emerald-700 hover:underline flex items-center gap-1">
+                                Ingresar ahora <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+
+                resultContainer.innerHTML = cardsHtml;
+            } else {
+                resultContainer.innerHTML = `
+                    <div class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-5 text-center animate-fade-in">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="user-x" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-base font-extrabold text-rose-950 mb-1">
+                            No se encontraron coincidencias
+                        </h3>
+                        <p class="text-xs sm:text-sm text-rose-800 leading-relaxed mb-4">
+                            El documento <strong class="font-mono bg-white px-1.5 py-0.5 rounded border border-rose-200">${queriedDoc}</strong> no registra un usuario asociado en el sistema. Por favor verifica que esté bien escrito o comunícate con <strong>Secretaría Académica</strong> del Gimnasio Cristiano Faro de Luz.
+                        </p>
+                        <div class="bg-white rounded-xl p-3.5 border border-rose-200/80 text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-center gap-2">
+                            <span class="flex items-center gap-1.5 font-semibold text-faro-navy">
+                                <i data-lucide="building-2" class="w-4 h-4 text-amber-500"></i>
+                                Atención en Secretaría Académica
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        function copyUsername(username, idx) {
+            navigator.clipboard.writeText(username).then(() => {
+                const btn = document.getElementById(`copy-btn-${idx}`);
+                btn.classList.replace('bg-amber-400', 'bg-emerald-600');
+                btn.classList.replace('text-faro-navy', 'text-white');
+                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span>¡Copiado!</span>`;
+                lucide.createIcons();
+                setTimeout(() => {
+                    btn.classList.replace('bg-emerald-600', 'bg-amber-400');
+                    btn.classList.replace('text-white', 'text-faro-navy');
+                    btn.innerHTML = `<i data-lucide="copy" class="w-4 h-4"></i><span>Copiar Usuario</span>`;
+                    lucide.createIcons();
+                }, 2000);
+            });
+        }
+
+        function toggleAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+            document.getElementById('remote-endpoint-input').value = REMOTE_API_URL;
+        }
+
+        function saveRemoteEndpoint() {
+            const url = document.getElementById('remote-endpoint-input').value.trim();
+            REMOTE_API_URL = url;
+            if (url) {
+                localStorage.setItem('gcfl_remote_api_url', url);
+                document.getElementById('db-mode-label').textContent = 'Servidor en la Nube Activo';
+                alert('URL de servidor guardada correctamente.');
+            } else {
+                localStorage.removeItem('gcfl_remote_api_url');
+                document.getElementById('db-mode-label').textContent = 'Bóveda Segura Activa';
+                alert('Modo Bóveda Criptográfica Local activado.');
+            }
+        }
+
+        function processExcelFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+
+                    const newGrouped = {};
+                    let count = 0;
+
+                    rows.forEach(row => {
+                        const doc = String(row['Contraseña'] || row['Documento'] || row['Tarjeta'] || '').trim().toUpperCase();
+                        const nombre = String(row['Nombres'] || row['Nombre'] || '').trim();
+                        const usuario = String(row['Usuario'] || '').trim();
+                        const gradoRaw = row['Grado'] !== undefined ? row['Grado'] : '';
+                        const gradoNum = parseInt(gradoRaw, 10);
+                        const gradoStr = isNaN(gradoNum) ? String(gradoRaw) : (gradoNum === 0 ? "Transición (0°)" : `Grado ${gradoNum}°`);
+
+                        if (doc && nombre && usuario) {
+                            if (!newGrouped[doc]) newGrouped[doc] = [];
+                            newGrouped[doc].push({ n: nombre, u: usuario, g: gradoStr });
+                            count++;
+                        }
+                    });
+
+                    if (count === 0) {
+                        alert("No se encontraron columnas válidas (Nombres, Usuario, Contraseña) en el archivo seleccionado.");
+                        return;
+                    }
+
+                    const newVault = {};
+                    Object.keys(newGrouped).forEach(docClean => {
+                        const h = sha256(SALT + docClean).substring(0, 16);
+                        const key = sha256(docClean + SALT);
+                        const payload = JSON.stringify(newGrouped[docClean]);
+                        newVault[h] = xorEncrypt(payload, key);
+                    });
+
+                    ENCRYPTED_VAULT = newVault;
+                    document.getElementById('download-updated-box').classList.remove('hidden');
+                    document.getElementById('new-vault-stats').textContent = `Se procesaron y cifraron ${count} estudiantes exitosamente. Ya puedes probar la búsqueda o descargar el nuevo archivo HTML listo para subir.`;
+                    lucide.createIcons();
+                } catch (err) {
+                    alert("Error al leer el archivo Excel: " + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function downloadUpdatedHTML() {
+            let currentHtml = document.documentElement.outerHTML;
+            const vaultRegex = /let ENCRYPTED_VAULT = \{.*?\};/s;
+            const updatedVaultCode = `let ENCRYPTED_VAULT = ${JSON.stringify(ENCRYPTED_VAULT)};`;
+            currentHtml = "<!DOCTYPE html>\n" + currentHtml.replace(vaultRegex, updatedVaultCode);
+
+            const blob = new Blob([currentHtml], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
